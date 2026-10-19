@@ -27,5 +27,17 @@ export {
   type EntryKind,
   type LedgerEntry,
 } from './ledger/entry.js';
+export {
+  ACCOUNT_TYPES,
+  LIABILITY_TYPES,
+  LIQUIDITY_LEVELS,
+  type Account,
+  type AccountType,
+  type Category,
+  type Goal,
+  type Liability,
+  type LiabilityType,
+  type Liquidity,
+} from './master-data.js';
 export { Money } from './money.js';
 export { err, ok, type Result } from './result.js';

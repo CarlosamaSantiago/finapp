@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@finapp/domain": "workspace:*"
+    "@finapp/domain": "workspace:*",
+    "better-sqlite3-multiple-ciphers": "13.0.3"
   }
 }
