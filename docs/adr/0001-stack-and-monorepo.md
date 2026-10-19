@@ -42,4 +42,6 @@ features, not tooling. The project is public, so the setup must also be safe to 
   TypeScript-aware runtime in M3.
 - Version bumps arrive through Dependabot PRs and must pass CI; very new releases wait at least a day (pnpm)
   or three days (Dependabot).
-- TypeScript stays one major behind until the lint toolchain catches up.
+- TypeScript stays one major behind until the lint toolchain catches up. `.github/dependabot.yml` ignores
+  `typescript >=6.1.0` and major `@types/node` bumps (which must track the Node major in `.nvmrc`); lift the
+  TypeScript ignore together with the pin.
