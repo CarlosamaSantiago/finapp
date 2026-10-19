@@ -8,20 +8,20 @@ Locale `es_CO`, currency `COP`.
 
 ## 1. What the app did (inferred from schema + data)
 
-| # | Capability | Evidence in the DB | Used in legacy data? |
-|---|---|---|---|
-| 1 | Accounts and net worth, grouped by liquidity | `accounts.liquidity`, `annual_return_rate`, `available_date` | Yes |
-| 2 | Ledger with 7 transaction types | `transactions.transaction_type` | Yes |
-| 3 | Debt management (cards, loans) | `liabilities.*` (payment day, grace days, minimum payment, lender, rate) | Yes |
-| 4 | Savings goals | `goals.*` (target, date, monthly contribution, priority, linked account) | Yes |
-| 5 | Emergency-fund tracking | `settings`: `emergency_fund_*`, `accounts.is_emergency_eligible` | Yes |
-| 6 | One-time obligations (due-date calendar) | `one_time_obligations` | Yes |
-| 7 | Recurring transactions | `recurring_transactions` (+ `last_generated_period`) | No (empty) |
-| 8 | Monthly budgets per category | `budgets` | No (empty) |
-| 9 | Monthly closings (net-worth history snapshots) | `monthly_closings` | No (empty) |
-| 10 | Purchase simulator (loan affordability) | `purchase_scenarios`, `settings.purchase_*_limit` | No (empty) |
-| 11 | Projections (inflation, income growth, returns) | `settings.annual_inflation`, `annual_income_growth`, `default_annual_return_rate` | Config only |
-| 12 | Data repair tooling | `financial_data_migrations` (4 reconcile scripts) | Yes |
+| #   | Capability                                      | Evidence in the DB                                                                | Used in legacy data? |
+| --- | ----------------------------------------------- | --------------------------------------------------------------------------------- | -------------------- |
+| 1   | Accounts and net worth, grouped by liquidity    | `accounts.liquidity`, `annual_return_rate`, `available_date`                      | Yes                  |
+| 2   | Ledger with 7 transaction types                 | `transactions.transaction_type`                                                   | Yes                  |
+| 3   | Debt management (cards, loans)                  | `liabilities.*` (payment day, grace days, minimum payment, lender, rate)          | Yes                  |
+| 4   | Savings goals                                   | `goals.*` (target, date, monthly contribution, priority, linked account)          | Yes                  |
+| 5   | Emergency-fund tracking                         | `settings`: `emergency_fund_*`, `accounts.is_emergency_eligible`                  | Yes                  |
+| 6   | One-time obligations (due-date calendar)        | `one_time_obligations`                                                            | Yes                  |
+| 7   | Recurring transactions                          | `recurring_transactions` (+ `last_generated_period`)                              | No (empty)           |
+| 8   | Monthly budgets per category                    | `budgets`                                                                         | No (empty)           |
+| 9   | Monthly closings (net-worth history snapshots)  | `monthly_closings`                                                                | No (empty)           |
+| 10  | Purchase simulator (loan affordability)         | `purchase_scenarios`, `settings.purchase_*_limit`                                 | No (empty)           |
+| 11  | Projections (inflation, income growth, returns) | `settings.annual_inflation`, `annual_income_growth`, `default_annual_return_rate` | Config only          |
+| 12  | Data repair tooling                             | `financial_data_migrations` (4 reconcile scripts)                                 | Yes                  |
 
 Capabilities 7-10 were designed but never fed with data. Treat them as **phase 2**, not as MVP.
 
@@ -61,15 +61,15 @@ erDiagram
 `transactions` is a single-table, double-entry-flavoured ledger. Which columns are filled depends on `transaction_type`
 (verified against the data):
 
-| Type (legacy) | source account | destination account | category | extra link | Meaning |
-|---|---|---|---|---|---|
-| `ingreso` | - | required | yes | - | Money in |
-| `gasto` | required | - | yes | - | Money out |
-| `transferencia` | required | required | usually | - | Move between own accounts (source != destination) |
-| `ahorro` | required | required | usually | - | Move into a savings account |
-| `aporte_meta` | required | - | yes | `goal_id` | Contribution to a goal |
-| `pago_deuda` | required | - | yes | `liability_id`, `interest_amount` | Debt payment; principal = `amount - interest_amount` |
-| `ajuste_saldo` | one of the two | one of the two | - | - | Manual balance correction (exactly one side is set) |
+| Type (legacy)   | source account | destination account | category | extra link                        | Meaning                                              |
+| --------------- | -------------- | ------------------- | -------- | --------------------------------- | ---------------------------------------------------- |
+| `ingreso`       | -              | required            | yes      | -                                 | Money in                                             |
+| `gasto`         | required       | -                   | yes      | -                                 | Money out                                            |
+| `transferencia` | required       | required            | usually  | -                                 | Move between own accounts (source != destination)    |
+| `ahorro`        | required       | required            | usually  | -                                 | Move into a savings account                          |
+| `aporte_meta`   | required       | -                   | yes      | `goal_id`                         | Contribution to a goal                               |
+| `pago_deuda`    | required       | -                   | yes      | `liability_id`, `interest_amount` | Debt payment; principal = `amount - interest_amount` |
+| `ajuste_saldo`  | one of the two | one of the two      | -        | -                                 | Manual balance correction (exactly one side is set)  |
 
 Other behaviours:
 
@@ -84,7 +84,7 @@ Other behaviours:
 2. **`liabilities.current_balance` is a cache.** For every liability,
    `current_balance == opening_balance - SUM(amount - interest_amount)` over its `pago_deuda` rows.
    The same fact is stored twice, which explains migrations `001_reconcile_liabilities`, `002`, `003`, `004`.
-   *Lesson: never store a value you can derive from the ledger.*
+   _Lesson: never store a value you can derive from the ledger._
 3. **Account balances are not stored**: they are derived (`initial_balance + inflows - outflows`). Good, keep this.
 4. **`ajuste_saldo`** exists to patch drift between the ledger and reality. It is a smell: corrections should be
    explicit reversal/correction entries with a reason.
@@ -103,18 +103,18 @@ Other behaviours:
 
 ## 5. What to keep vs. change
 
-| Keep | Change |
-|---|---|
-| Derived account balances | Derive liability balances too; drop `current_balance` |
-| Idempotent writes via `request_id` | Keep, and make it part of the API contract |
-| `RESTRICT` FKs + `CHECK` constraints | Turn `foreign_keys=ON` on every connection and test it |
-| Decimal-exact money | Use integer minor units (see `ARCHITECTURE.md`) |
-| Soft delete for master data | Ledger becomes append-only (corrections via reversal) |
-| Typed, explicit transaction kinds | Enforce per-type invariants in the domain layer, not by convention |
-| Idea of monthly closings | Make them generated snapshots, never the source of truth |
-| - | English enum identifiers + CHECK constraints; Spanish only in the UI |
-| - | Versioned SQL migrations instead of `ALTER TABLE` + repair scripts |
-| - | Typed settings (one table or validated schema), no magic markers |
+| Keep                                 | Change                                                               |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| Derived account balances             | Derive liability balances too; drop `current_balance`                |
+| Idempotent writes via `request_id`   | Keep, and make it part of the API contract                           |
+| `RESTRICT` FKs + `CHECK` constraints | Turn `foreign_keys=ON` on every connection and test it               |
+| Decimal-exact money                  | Use integer minor units (see `ARCHITECTURE.md`)                      |
+| Soft delete for master data          | Ledger becomes append-only (corrections via reversal)                |
+| Typed, explicit transaction kinds    | Enforce per-type invariants in the domain layer, not by convention   |
+| Idea of monthly closings             | Make them generated snapshots, never the source of truth             |
+| -                                    | English enum identifiers + CHECK constraints; Spanish only in the UI |
+| -                                    | Versioned SQL migrations instead of `ALTER TABLE` + repair scripts   |
+| -                                    | Typed settings (one table or validated schema), no magic markers     |
 
 ## 6. Acceptance test for the rewrite
 

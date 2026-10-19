@@ -1,0 +1,15 @@
+# Block financial data and secrets even if force-added (git add -f).
+blocked=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '(^|/)data/|\.db($|-)|\.sqlite[0-9]*($|-)|(^|/)\.env' || true)
+if [ -n "$blocked" ]; then
+  echo "pre-commit: refusing to commit financial data or secrets:" >&2
+  echo "$blocked" >&2
+  exit 1
+fi
+
+pnpm exec lint-staged
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --staged --redact --no-banner
+else
+  echo "pre-commit: gitleaks not installed, secret scan skipped (CI still runs it)." >&2
+fi

@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+  - tools/*
+
+# Pin exact versions on add (supply-chain rule in docs/ARCHITECTURE.md §6)
+saveExact: true
+# Refuse to install when Node doesn't match "engines"
+engineStrict: true
