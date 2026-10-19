@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Read(**/data/**)",
+      "Read(**/*.db)",
+      "Read(**/*.db-*)",
+      "Read(**/*.sqlite)",
+      "Read(**/*.sqlite3)",
+      "Read(**/*.sqlite-*)",
+      "Read(**/.env*)",
+      "Edit(**/data/**)",
+      "Edit(**/*.db)",
+      "Edit(**/*.db-*)",
+      "Edit(**/*.sqlite)",
+      "Edit(**/*.sqlite3)",
+      "Edit(**/*.sqlite-*)",
+      "Edit(**/.env*)",
+      "Bash(sqlite3 *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-financial-data.mjs\"",
+            "timeout": 10,
+            "onFailure": "block",
+            "statusMessage": "Checking for financial data access"
+          }
+        ]
+      }
+    ]
+  }
+}

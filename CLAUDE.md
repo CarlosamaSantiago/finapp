@@ -66,6 +66,9 @@ Run `pnpm typecheck && pnpm lint && pnpm test` before declaring any task done.
 - Parameterized queries only. Validate all input with Zod.
 - Never commit `data/`, `*.db`, `.env*` or real financial data. Use the synthetic seed in `packages/db/seed`.
 - Never read or print the contents of the real database in a session; use the seed or the in-memory test DB.
+  Enforced by `.claude/settings.json`: deny rules for `data/`, `*.db`, `*.sqlite*` and `.env*`, plus a `PreToolUse` hook
+  (`.claude/hooks/block-financial-data.mjs`) that refuses shell commands naming them. If a legitimate command is blocked
+  (e.g. one mentioning `*.db` as a glob), use the file tools instead of loosening the rules.
 
 ## Testing
 
