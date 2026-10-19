@@ -34,8 +34,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,mjs,cjs}'],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    // Claude Code hooks run directly under Node.
+    files: ['.claude/hooks/**'],
+    languageOptions: { globals: { process: 'readonly' } },
   },
 
   ...boundaries.map(({ files, allowed }) => ({
