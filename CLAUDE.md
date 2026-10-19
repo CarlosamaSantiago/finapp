@@ -7,9 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Local-first, single-user personal-finance app. TypeScript monorepo (pnpm). SQLite file on disk, Fastify API, React web UI.
 Read `docs/ARCHITECTURE.md` and `docs/REVERSE_ENGINEERING.md` before changing the model.
 
-**Current state: pre-M0.** The repo holds only docs; no `package.json`, packages or `.gitignore` exist yet. The commands
-below are the target contract: when scaffolding (M0), wire the root scripts to exactly these names, and create
-`.gitignore` (`data/`, `*.db`, `.env*`) before the first commit. Milestones M0-M5 are defined in `docs/ARCHITECTURE.md` §8.
+**Current state: M0 (skeleton).** Packages exist as placeholders. `typecheck`, `lint`, `format` and `test` work;
+`dev`, `test:e2e`, `db:*` and `import:legacy` are wired in M2-M4. Milestones are in `docs/ARCHITECTURE.md` §8;
+M0 decisions (TypeScript 6 pin, supply-chain rules) are in `docs/adr/0001-stack-and-monorepo.md`.
 
 ## Commands
 
@@ -30,6 +30,17 @@ Run `pnpm typecheck && pnpm lint && pnpm test` before declaring any task done.
 - `packages/domain` is pure TypeScript: no I/O, no framework imports, no `Date.now()` (inject a clock).
 - Dependency direction: `domain` <- `db`, `contracts` <- `api` <- (HTTP). `web` imports `contracts` only.
 - All request and response shapes are Zod schemas in `packages/contracts`. Never hand-write duplicate types.
+- Boundaries are enforced by `eslint.config.js` (`boundaries`) and `test/architecture.test.ts`. A new package
+  needs an entry in both.
+- Packages export TypeScript source (`"exports": "./src/index.ts"`); there is no per-package build.
+
+## Dependencies
+
+- Add deps with `pnpm --filter @finapp/<pkg> add <dep>`; versions are pinned exactly. Commit `pnpm-lock.yaml`.
+- pnpm refuses releases younger than a day (`minimumReleaseAge`). Never add `minimumReleaseAgeExclude`; pick an
+  older version. Don't request today's release by exact version.
+- TypeScript stays on 6.x until `typescript-eslint` supports 7 (ADR 0001).
+- Pin GitHub Actions to full commit SHAs with the version in a comment.
 
 ## Money and ledger (critical)
 

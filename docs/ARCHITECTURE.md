@@ -32,7 +32,7 @@ Alternative if you want a real desktop app later: wrap the same web app and API 
 ## 3. Repository layout
 
 ```text
-finance-app/
+finapp/
 ├─ apps/
 │  ├─ api/                 # Fastify server (HTTP adapter, auth, wiring)
 │  │  └─ src/{http,auth,infra,main.ts}
