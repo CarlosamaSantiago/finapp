@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Tabular figures keep amounts aligned in tables and cards. */
+.amount {
+  font-variant-numeric: tabular-nums;
+}
