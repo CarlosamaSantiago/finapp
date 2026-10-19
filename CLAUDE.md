@@ -7,10 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Local-first, single-user personal-finance app. TypeScript monorepo (pnpm). SQLite file on disk, Fastify API, React web UI.
 Read `docs/ARCHITECTURE.md` and `docs/REVERSE_ENGINEERING.md` before changing the model.
 
-**Current state: M1 (domain).** `packages/domain` holds `Money`, ledger kinds, reversals and derived balances; the other
-packages are placeholders. `typecheck`, `lint`, `format`, `test` and `test:coverage` work; `dev`, `test:e2e`, `db:*` and
-`import:legacy` are wired in M2-M4. Milestones are in `docs/ARCHITECTURE.md` §8. Decisions: ADR 0001 (stack, TypeScript 6
-pin, supply chain), ADR 0002 (money, dates, entry kinds and their legacy mapping, reversals).
+**Current state: M2 (persistence).** `packages/domain` holds `Money`, ledger kinds, reversals and derived balances;
+`packages/db` holds the encrypted store, migrations and repositories; `tools/import-legacy` imports the legacy file and runs
+the golden check. `apps/api` and `apps/web` are placeholders; `dev` and `test:e2e` are wired in M3-M4. Milestones are in
+`docs/ARCHITECTURE.md` §8. Decisions: ADR 0001 (stack, supply chain), ADR 0002 (money, dates, entry kinds, reversals),
+ADR 0003 (SQLCipher store, Argon2id key, SQL migrations, no ORM).
 
 ## Commands
 
@@ -21,8 +22,10 @@ pin, supply chain), ADR 0002 (money, dates, entry kinds and their legacy mapping
 - Unit + API tests: `pnpm test` (with the 90% `packages/domain` coverage gate, as CI runs it: `pnpm test:coverage`)
 - Single test (Vitest): `pnpm vitest run <path/to/file.test.ts> -t "<test name>"`
 - E2E: `pnpm test:e2e`
-- DB migrations: `pnpm db:generate` then `pnpm db:migrate`
-- Legacy import (read-only source): `pnpm import:legacy -- --source <path-to-old.db>`
+- DB migrations: append to `MIGRATIONS` in `packages/db/src/migrations.ts`; they run automatically when a store opens
+- Legacy import (read-only source, dry run by default): `pnpm import:legacy -- --source <old> [--target-dir <dir>]`.
+  Only the user runs it on real data; Claude tests it with the synthetic legacy fixture in `importer.test.ts`.
+- Run TypeScript entry points with `tsx`. `better-sqlite3-multiple-ciphers` is patched (`patches/`) to expose its types.
 
 Run `pnpm typecheck && pnpm lint && pnpm test` before declaring any task done.
 

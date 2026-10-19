@@ -7,3 +7,8 @@ packages:
 saveExact: true
 # Refuse to install when Node doesn't match "engines"
 engineStrict: true
+patchedDependencies:
+  better-sqlite3-multiple-ciphers@13.0.3: patches/better-sqlite3-multiple-ciphers@13.0.3.patch
+# Install scripts are denied unless listed as true (least privilege).
+allowBuilds:
+  esbuild: false # postinstall only verifies the binary; platform packages provide it

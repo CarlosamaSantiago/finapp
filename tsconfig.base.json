@@ -17,12 +17,6 @@
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "types": [],
-    "paths": {
-      // The driver's "exports" map hides its index.d.ts from NodeNext resolution.
-      "better-sqlite3-multiple-ciphers": [
-        "./packages/db/node_modules/better-sqlite3-multiple-ciphers/index.d.ts"
-      ]
-    }
+    "types": []
   }
 }
