@@ -48,7 +48,7 @@ export default tseslint.config(
   // Domain is pure: no I/O, no third-party code, no ambient clock.
   {
     files: ['packages/domain/src/**'],
-    ignores: ['**/*.test.ts'],
+    ignores: ['**/*.test.ts', '**/testing/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -57,6 +57,10 @@ export default tseslint.config(
             {
               regex: '^(?!\\.)',
               message: 'packages/domain is pure: only relative imports are allowed.',
+            },
+            {
+              regex: '/testing/',
+              message: 'Test helpers in src/testing are for tests only.',
             },
           ],
         },
