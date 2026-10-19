@@ -7,9 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Local-first, single-user personal-finance app. TypeScript monorepo (pnpm). SQLite file on disk, Fastify API, React web UI.
 Read `docs/ARCHITECTURE.md` and `docs/REVERSE_ENGINEERING.md` before changing the model.
 
-**Current state: M0 (skeleton).** Packages exist as placeholders. `typecheck`, `lint`, `format` and `test` work;
-`dev`, `test:e2e`, `db:*` and `import:legacy` are wired in M2-M4. Milestones are in `docs/ARCHITECTURE.md` §8;
-M0 decisions (TypeScript 6 pin, supply-chain rules) are in `docs/adr/0001-stack-and-monorepo.md`.
+**Current state: M1 (domain).** `packages/domain` holds `Money`, ledger kinds, reversals and derived balances; the other
+packages are placeholders. `typecheck`, `lint`, `format`, `test` and `test:coverage` work; `dev`, `test:e2e`, `db:*` and
+`import:legacy` are wired in M2-M4. Milestones are in `docs/ARCHITECTURE.md` §8. Decisions: ADR 0001 (stack, TypeScript 6
+pin, supply chain), ADR 0002 (money, dates, entry kinds and their legacy mapping, reversals).
 
 ## Commands
 
@@ -17,7 +18,7 @@ M0 decisions (TypeScript 6 pin, supply-chain rules) are in `docs/adr/0001-stack-
 - Dev (api + web): `pnpm dev`
 - Typecheck: `pnpm typecheck`
 - Lint / format: `pnpm lint` / `pnpm format`
-- Unit + API tests: `pnpm test`
+- Unit + API tests: `pnpm test` (with the 90% `packages/domain` coverage gate, as CI runs it: `pnpm test:coverage`)
 - Single test (Vitest): `pnpm vitest run <path/to/file.test.ts> -t "<test name>"`
 - E2E: `pnpm test:e2e`
 - DB migrations: `pnpm db:generate` then `pnpm db:migrate`
@@ -28,6 +29,10 @@ Run `pnpm typecheck && pnpm lint && pnpm test` before declaring any task done.
 ## Architecture rules
 
 - `packages/domain` is pure TypeScript: no I/O, no framework imports, no `Date.now()` (inject a clock).
+- How each entry kind moves money is defined once, in `entryEffects` (`packages/domain/src/ledger/effects.ts`); every
+  balance folds over it. Kind rules live in the `RULES` table in `ledger/entry.ts`, mirroring ADR 0002.
+- Domain test helpers live in `packages/domain/src/testing/` (builders, fast-check arbitraries); production code may not
+  import them.
 - Dependency direction: `domain` <- `db`, `contracts` <- `api` <- (HTTP). `web` imports `contracts` only.
 - All request and response shapes are Zod schemas in `packages/contracts`. Never hand-write duplicate types.
 - Boundaries are enforced by `eslint.config.js` (`boundaries`) and `test/architecture.test.ts`. A new package

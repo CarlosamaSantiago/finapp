@@ -11,7 +11,8 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:coverage": "vitest run --coverage"
   },
   "lint-staged": {
     "*.{ts,js}": [
