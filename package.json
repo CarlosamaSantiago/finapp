@@ -7,13 +7,19 @@
     "node": ">=24"
   },
   "scripts": {
-    "typecheck": "pnpm -r --if-present typecheck",
-    "lint": "pnpm -r --if-present lint",
-    "format": "pnpm -r --if-present format",
+    "typecheck": "tsc --noEmit && pnpm -r --if-present typecheck",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
     "test": "vitest run"
   },
   "devDependencies": {
-    "typescript": "7.0.2",
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "eslint": "10.13.0",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2",
     "vitest": "5.0.5"
   }
 }
