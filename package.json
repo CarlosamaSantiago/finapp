@@ -14,7 +14,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,js}": [
+    "*.{ts,js,mjs,cjs}": [
       "eslint --fix --max-warnings=0",
       "prettier --write"
     ],
