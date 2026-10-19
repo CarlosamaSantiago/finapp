@@ -26,8 +26,9 @@ calling `localhost` (CSRF, DNS rebinding) and anyone with access to an unlocked 
    - Bodies and responses are validated and serialized with the Zod schemas in `packages/contracts`.
    - Money is an integer number of minor units (`...Minor`) in JSON.
    - Errors are `{ error, details? }`; `details` carries domain codes (`missing_field`, `already_reversed`,
-     ...) that the UI translates. Schema failures are `422 validation_failed`, ledger rules `422
-ledger_rejected`, duplicate names `409 duplicate_name`.
+     ...) that the UI translates.
+   - Status codes: schema failures `422 validation_failed`, ledger rules `422 ledger_rejected`, duplicate
+     names `409 duplicate_name`.
    - Every write takes a UUID `requestId`. Entries use the ledger's own `request_id`; master-data writes replay
      the stored response from `idempotency_keys`.
    - Logs never include bodies, the cookie or the CSRF header.

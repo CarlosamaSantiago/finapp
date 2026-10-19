@@ -7,22 +7,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Local-first, single-user personal-finance app. TypeScript monorepo (pnpm). SQLite file on disk, Fastify API, React web UI.
 Read `docs/ARCHITECTURE.md` and `docs/REVERSE_ENGINEERING.md` before changing the model.
 
-**Current state: M3 (API).** `packages/domain` (money, ledger rules, balances), `packages/db` (encrypted store,
-repositories), `packages/contracts` (Zod schemas), `tools/import-legacy` (import + golden check) and `apps/api` (Fastify,
-sessions) are implemented; `apps/web` is a placeholder until M4. Milestones are in `docs/ARCHITECTURE.md` §8. Decisions:
-ADR 0001 (stack, supply chain), 0002 (money, entry kinds, reversals), 0003 (encrypted store, no ORM), 0004 (API sessions,
-CSRF, conventions).
+**Current state: M4 (UI).** All layers work end to end: `packages/domain` (money, ledger rules, balances),
+`packages/db` (encrypted store, repositories), `packages/contracts` (Zod schemas), `tools/import-legacy` (import + golden
+check), `apps/api` (Fastify, sessions) and `apps/web` (React). Next: M5 polish (README screenshots, `SECURITY.md`, backups).
+Milestones are in `docs/ARCHITECTURE.md` §8. Decisions: ADR 0001 (stack, supply chain), 0002 (money, entry kinds,
+reversals), 0003 (encrypted store, no ORM), 0004 (API sessions, CSRF, conventions).
 
 ## Commands
 
 - Install: `pnpm install`
-- Dev (api + web): `pnpm dev`. API on http://127.0.0.1:4317; store in the repo's data folder unless `FINAPP_DATA_DIR`
-  is set. Smoke-test the real server against a temporary `FINAPP_DATA_DIR`, never the real store.
+- Dev (api + web): `pnpm dev`, then open http://127.0.0.1:5173 (Vite proxies `/api` to the API on port 4317). The
+  store lives in the repo's data folder unless `FINAPP_DATA_DIR` is set. Smoke-test real servers against a temporary
+  `FINAPP_DATA_DIR`, never the real store.
 - Typecheck: `pnpm typecheck`
 - Lint / format: `pnpm lint` / `pnpm format`
 - Unit + API tests: `pnpm test` (with the 90% `packages/domain` coverage gate, as CI runs it: `pnpm test:coverage`)
 - Single test (Vitest): `pnpm vitest run <path/to/file.test.ts> -t "<test name>"`
-- E2E: `pnpm test:e2e`
+- E2E: `pnpm test:e2e` (Playwright; starts its own API + web on ports 4318/5174 with a throwaway store). First time:
+  `pnpm exec playwright install chromium`.
 - DB migrations: append to `MIGRATIONS` in `packages/db/src/migrations.ts`; they run automatically when a store opens
 - Legacy import (read-only source, dry run by default): `pnpm import:legacy -- --source <old> [--target-dir <dir>]`.
   Only the user runs it on real data; Claude tests it with the synthetic legacy fixture in `importer.test.ts`.
