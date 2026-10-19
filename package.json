@@ -14,10 +14,11 @@
     "test": "vitest run",
     "prepare": "husky",
     "test:coverage": "vitest run --coverage",
-    "import:legacy": "tsx tools/import-legacy/src/cli.ts"
+    "import:legacy": "tsx tools/import-legacy/src/cli.ts",
+    "test:e2e": "playwright test"
   },
   "lint-staged": {
-    "*.{ts,js,mjs,cjs}": [
+    "*.{ts,tsx,js,mjs,cjs}": [
       "eslint --fix --max-warnings=0",
       "prettier --write"
     ],
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
     "@types/node": "24.19.2",
     "@vitest/coverage-v8": "5.0.5",
     "eslint": "10.13.0",

@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router';
 import { api, setCsrfToken, setUnauthenticatedHandler } from './api.js';
@@ -18,6 +18,16 @@ const NAV = [
   ['/categorias', 'Categorías'],
 ] as const;
 
+/**
+ * Forgets cached financial data and re-reads the session state. The session query must stay in the
+ * cache: the app shell is observing it, so clearing it would leave the stale "unlocked" screen up.
+ */
+function endSession(client: QueryClient) {
+  setCsrfToken(undefined);
+  client.removeQueries({ predicate: (q) => q.queryKey[0] !== keys.session[0] });
+  void client.refetchQueries({ queryKey: keys.session });
+}
+
 export function App() {
   const session = useSession();
   const client = useQueryClient();
@@ -25,9 +35,7 @@ export function App() {
   useEffect(() => {
     // Any 401 (logout elsewhere, idle timeout) sends the user back to the login screen.
     setUnauthenticatedHandler(() => {
-      setCsrfToken(undefined);
-      client.clear();
-      void client.invalidateQueries({ queryKey: keys.session });
+      endSession(client);
     });
   }, [client]);
 
@@ -67,9 +75,7 @@ function Sidebar() {
   const logout = useMutation({
     mutationFn: () => api.post('/session/logout'),
     onSettled: () => {
-      setCsrfToken(undefined);
-      client.clear();
-      void client.invalidateQueries({ queryKey: keys.session });
+      endSession(client);
     },
   });
 
