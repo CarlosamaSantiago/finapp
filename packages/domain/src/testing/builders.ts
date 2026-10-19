@@ -21,7 +21,7 @@ const VALID: Record<EntryKind, Partial<LedgerEntry>> = {
 /** A valid entry of the given kind; override any field. Amounts are in minor units. */
 export function entry(
   kind: EntryKind,
-  overrides: Partial<LedgerEntry> & { id?: number; minor?: number } = {},
+  overrides: Omit<Partial<LedgerEntry>, 'id'> & { id?: number; minor?: number } = {},
 ): LedgerEntry {
   const { id = 1, minor = 10_000, ...rest } = overrides;
   return {
