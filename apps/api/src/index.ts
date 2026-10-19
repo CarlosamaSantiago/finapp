@@ -1,2 +1,3 @@
-// Fastify server wiring (127.0.0.1 only) arrives in M3.
-export {};
+export { Vault, type StoreAccess } from './auth/vault.js';
+export { buildApp, CSRF_HEADER, SESSION_COOKIE, type App, type AppOptions } from './http/app.js';
+export { loadConfig } from './infra/runtime.js';

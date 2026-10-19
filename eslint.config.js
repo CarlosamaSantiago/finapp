@@ -38,6 +38,11 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
   },
   {
+    // Fastify plugins and handlers are async by convention; it awaits the returned promise.
+    files: ['apps/api/src/http/**'],
+    rules: { '@typescript-eslint/require-await': 'off' },
+  },
+  {
     // Claude Code hooks run directly under Node.
     files: ['.claude/hooks/**'],
     languageOptions: { globals: { process: 'readonly' } },

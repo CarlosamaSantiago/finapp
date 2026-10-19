@@ -7,16 +7,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Local-first, single-user personal-finance app. TypeScript monorepo (pnpm). SQLite file on disk, Fastify API, React web UI.
 Read `docs/ARCHITECTURE.md` and `docs/REVERSE_ENGINEERING.md` before changing the model.
 
-**Current state: M2 (persistence).** `packages/domain` holds `Money`, ledger kinds, reversals and derived balances;
-`packages/db` holds the encrypted store, migrations and repositories; `tools/import-legacy` imports the legacy file and runs
-the golden check. `apps/api` and `apps/web` are placeholders; `dev` and `test:e2e` are wired in M3-M4. Milestones are in
-`docs/ARCHITECTURE.md` §8. Decisions: ADR 0001 (stack, supply chain), ADR 0002 (money, dates, entry kinds, reversals),
-ADR 0003 (SQLCipher store, Argon2id key, SQL migrations, no ORM).
+**Current state: M3 (API).** `packages/domain` (money, ledger rules, balances), `packages/db` (encrypted store,
+repositories), `packages/contracts` (Zod schemas), `tools/import-legacy` (import + golden check) and `apps/api` (Fastify,
+sessions) are implemented; `apps/web` is a placeholder until M4. Milestones are in `docs/ARCHITECTURE.md` §8. Decisions:
+ADR 0001 (stack, supply chain), 0002 (money, entry kinds, reversals), 0003 (encrypted store, no ORM), 0004 (API sessions,
+CSRF, conventions).
 
 ## Commands
 
 - Install: `pnpm install`
-- Dev (api + web): `pnpm dev`
+- Dev (api + web): `pnpm dev`. API on http://127.0.0.1:4317; store in the repo's data folder unless `FINAPP_DATA_DIR`
+  is set. Smoke-test the real server against a temporary `FINAPP_DATA_DIR`, never the real store.
 - Typecheck: `pnpm typecheck`
 - Lint / format: `pnpm lint` / `pnpm format`
 - Unit + API tests: `pnpm test` (with the 90% `packages/domain` coverage gate, as CI runs it: `pnpm test:coverage`)
