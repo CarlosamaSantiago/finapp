@@ -7,6 +7,13 @@ updates:
     # Same idea as pnpm's minimumReleaseAge: let new releases age before adopting them.
     cooldown:
       default-days: 3
+    ignore:
+      # typescript-eslint supports TypeScript <6.1 only (ADR 0001). Remove when that changes.
+      - dependency-name: typescript
+        versions: ['>=6.1.0']
+      # Types must match the Node major in .nvmrc, not the newest Node.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         dependency-type: development
