@@ -6,7 +6,7 @@
 A local-first, single-user personal-finance app. Your data lives in one SQLite file on your machine and never
 leaves it. TypeScript end to end: Fastify API, React UI, pure domain package for money rules.
 
-**Status:** M0 (workspace skeleton). See the [delivery plan](docs/ARCHITECTURE.md#8-delivery-plan).
+**Status:** M1 (domain: money, ledger rules, derived balances). See the [delivery plan](docs/ARCHITECTURE.md#8-delivery-plan).
 
 ## Design in one minute
 
@@ -35,6 +35,7 @@ pnpm typecheck && pnpm lint && pnpm test
 | `pnpm lint`                          | ESLint (incl. architecture rules), Prettier check |
 | `pnpm format`                        | Prettier write                                    |
 | `pnpm test`                          | All Vitest projects                               |
+| `pnpm test:coverage`                 | Tests plus the 90% domain coverage gate (CI)      |
 | `pnpm vitest run <file> -t "<name>"` | A single test                                     |
 
 ## Repository layout

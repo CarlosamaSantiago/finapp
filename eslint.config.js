@@ -48,7 +48,7 @@ export default tseslint.config(
   // Domain is pure: no I/O, no third-party code, no ambient clock.
   {
     files: ['packages/domain/src/**'],
-    ignores: ['**/*.test.ts'],
+    ignores: ['**/*.test.ts', '**/testing/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -58,18 +58,32 @@ export default tseslint.config(
               regex: '^(?!\\.)',
               message: 'packages/domain is pure: only relative imports are allowed.',
             },
+            {
+              regex: '/testing/',
+              message: 'Test helpers in src/testing are for tests only.',
+            },
           ],
         },
       ],
       'no-restricted-properties': [
         'error',
         { object: 'Date', property: 'now', message: 'Inject a clock instead.' },
+        { object: 'Math', property: 'round', message: 'No float rounding on money; see ADR 0002.' },
+        { object: 'Number', property: 'parseFloat', message: 'Use Money.fromDecimalString.' },
+      ],
+      'no-restricted-globals': [
+        'error',
+        { name: 'parseFloat', message: 'Use Money.fromDecimalString.' },
       ],
       'no-restricted-syntax': [
         'error',
         {
           selector: "NewExpression[callee.name='Date'][arguments.length=0]",
           message: 'Inject a clock instead.',
+        },
+        {
+          selector: "CallExpression[callee.property.name='toFixed']",
+          message: 'toFixed rounds floats; use Money.toDecimalString.',
         },
       ],
     },
